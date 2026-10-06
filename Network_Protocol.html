@@ -1,0 +1,203 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Network Protocols</title>
+<style>
+:root{--bg:#0B1220;--card:rgba(26,37,64,.72);--tx:#F1F5FF;--mu:#9FB0CF;--ln:rgba(143,163,199,.22);--req:#F59E0B;--res:#10B981;--bad:#EF4444;--ac:#3B82F6;--ac2:#8B5CF6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#EEF3FF;--card:rgba(255,255,255,.85);--tx:#16203A;--mu:#55627F;--ln:rgba(60,80,140,.2)}}
+:root[data-theme="light"]{--bg:#EEF3FF;--card:rgba(255,255,255,.85);--tx:#16203A;--mu:#55627F;--ln:rgba(60,80,140,.2)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:Calibri,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.5;overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background-image:radial-gradient(var(--ln) 1px,transparent 1px);background-size:26px 26px}
+.blob{position:absolute;width:380px;height:380px;border-radius:50%;filter:blur(80px);opacity:.33;animation:fl 14s ease-in-out infinite alternate}
+@keyframes fl{to{transform:translate(70px,-50px) scale(1.25)}}
+.w{max-width:920px;margin:0 auto;padding:18px 14px 40px}
+h1{text-align:center;margin:10px 0 4px;font-size:34px;font-weight:800}
+h1 b{background:linear-gradient(90deg,#3B82F6,#8B5CF6,#EC4899,#F59E0B);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{text-align:center;color:var(--mu);margin:0 0 16px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px}
+.tab{--c:#3B82F6;--c2:#8B5CF6;border:1.5px solid var(--c);background:var(--card);color:var(--tx);border-radius:999px;padding:8px 15px;cursor:pointer;font:700 14px inherit;font-family:inherit;white-space:nowrap;transition:transform .2s}
+.tab:hover{transform:translateY(-2px)}.tab.on{background:linear-gradient(135deg,var(--c),var(--c2));color:#fff;border-color:transparent;box-shadow:0 8px 20px -6px var(--c)}
+.card{position:relative;overflow:hidden;background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--ln);border-radius:18px;padding:16px;margin-top:12px}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--ac),var(--ac2))}
+.card h3{margin:0 0 8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ac)}.card p{margin:0}
+.ttl{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+.big{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:30px;background:linear-gradient(135deg,var(--ac),var(--ac2));box-shadow:0 8px 22px -6px var(--ac)}
+.k{font-size:26px;font-weight:800}.tag{color:var(--mu);font-size:13px}
+.lay{margin-left:auto;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.08em;color:#fff;background:linear-gradient(135deg,var(--ac),var(--ac2))}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:640px){.grid{grid-template-columns:1fr}.lay{margin-left:0}}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{--c:#3B82F6;background:color-mix(in srgb,var(--c) 18%,transparent);border:1px solid var(--c);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--mu);margin-bottom:4px}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.stage{position:relative;height:140px;margin:6px 0;overflow:hidden}
+.line{position:absolute;left:10%;right:10%;top:43px;height:3px;background:repeating-linear-gradient(90deg,var(--ac) 0 10px,transparent 10px 20px);opacity:.55;animation:fw 1s linear infinite}
+@keyframes fw{to{background-position:20px 0}}
+.node{position:absolute;top:12px;transform:translateX(-50%);text-align:center;font-size:12px;font-weight:700;width:100px;line-height:1.2;transition:transform .3s}
+.orb{width:64px;height:64px;margin:0 auto 6px;border-radius:50%;display:grid;place-items:center;font-size:30px;position:relative;z-index:1;background:linear-gradient(135deg,var(--ac),var(--ac2));box-shadow:0 0 0 4px var(--bg),0 0 24px -2px var(--ac)}
+.node.hit{transform:translateX(-50%) scale(1.2)}.node.hit .orb{box-shadow:0 0 0 4px var(--bg),0 0 40px 4px var(--ac)}
+.pkt{--pc:var(--req);position:absolute;top:44px;transform:translate(-50%,-50%);padding:5px 12px;border-radius:999px;color:#fff;font-size:12px;font-weight:800;white-space:nowrap;opacity:0;z-index:3;box-shadow:0 0 18px var(--pc);transition:left 1.2s ease-in-out,opacity .4s}
+.pkt::before{content:"";position:absolute;right:100%;top:50%;width:50px;height:3px;transform:translateY(-50%);background:linear-gradient(90deg,transparent,var(--pc))}
+.pkt.rev::before{right:auto;left:100%;transform:translateY(-50%) scaleX(-1)}
+.pkt.show{opacity:1}.pkt.lost{background:var(--bad)!important;--pc:var(--bad);animation:boom .9s forwards}
+@keyframes boom{0%{transform:translate(-50%,-50%)}25%{transform:translate(-50%,-50%) scale(1.3) rotate(-8deg)}100%{transform:translate(-50%,50px) rotate(25deg);opacity:0}}
+.rip{position:absolute;top:44px;width:64px;height:64px;border-radius:50%;border:3px solid var(--rc);transform:translate(-50%,-50%) scale(.6);animation:rp .9s ease-out forwards;pointer-events:none}
+@keyframes rp{to{transform:translate(-50%,-50%) scale(2.4);opacity:0}}
+.cf{position:absolute;top:60%;font-size:18px;animation:up 1.5s ease-out forwards;pointer-events:none}@keyframes up{to{transform:translateY(-110px) rotate(40deg);opacity:0}}
+.bar{height:6px;border-radius:9px;background:var(--ln);margin:10px 0;overflow:hidden}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .5s}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button.b{border:0;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-radius:12px;padding:9px 16px;font:700 14px inherit;font-family:inherit;cursor:pointer;box-shadow:0 6px 16px -6px var(--ac)}
+button.b.g{background:var(--card);color:var(--tx);border:1px solid var(--ln);box-shadow:none}
+.spd{margin-left:auto;font-size:12px;color:var(--mu);display:flex;gap:4px;align-items:center}
+.spd button{border:1px solid var(--ln);background:var(--card);border-radius:8px;padding:4px 8px;cursor:pointer;font-size:14px}.spd button.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 25%,transparent)}
+.now{margin-top:12px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--ac) 12%,transparent);border-left:4px solid var(--ac);min-height:64px}
+.insp{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}@media(max-width:560px){.insp{grid-template-columns:1fr 1fr}}
+.insp div{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:6px 10px}.insp small{display:block;font-size:10px;letter-spacing:.1em;color:var(--mu);font-weight:800}.insp b{font-size:13px}
+ol.log{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+ol.log li{--c:var(--req);display:flex;gap:10px;align-items:center;width:82%;padding:8px 12px;border-radius:14px;border:1px solid var(--ln);border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 10%,transparent);font-size:13px;opacity:.45;cursor:pointer;transition:all .3s}
+ol.log li.bk{--c:var(--res);margin-left:auto;flex-direction:row-reverse;text-align:right;border-left:1px solid var(--ln);border-right:4px solid var(--c)}
+ol.log li.on{opacity:.85}ol.log li.cur{opacity:1;box-shadow:0 0 0 2px var(--c),0 8px 20px -8px var(--c);transform:scale(1.02)}
+ol.log li i{font-style:normal;font-weight:800;min-width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:#fff;font-size:12px}
+ol.log li small{display:block;color:var(--mu);font-size:11px}
+.hint{color:var(--mu);font-size:13px;margin-top:10px}
+
+.hero{display:flex;align-items:center;justify-content:center;gap:36px;flex-wrap:wrap;padding:10px 0}
+.orbit{position:relative;width:340px;height:340px}
+.ring{position:absolute;inset:22px;border-radius:50%;border:2px dashed var(--ln)}
+.core{position:absolute;left:50%;top:50%;width:110px;height:110px;margin:-55px;border-radius:50%;display:grid;place-items:center;font-size:56px;background:radial-gradient(circle,rgba(99,102,241,.35),transparent 70%);animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.1)}}
+.spin{position:absolute;inset:0;animation:spin 40s linear infinite}.spin:hover,.spin:hover .pp{animation-play-state:paused}
+.pl{position:absolute;left:50%;top:50%;width:68px;height:68px;margin:-34px;transform:rotate(var(--a)) translateX(148px) rotate(calc(-1*var(--a)))}
+.pp{animation:spin 40s linear infinite reverse}@keyframes spin{to{transform:rotate(360deg)}}
+.pb{border:0;cursor:pointer;width:68px;height:68px;margin:0;color:inherit;box-shadow:0 0 28px 2px var(--ac);transition:transform .25s}.pb:hover{transform:scale(1.18)}
+.ht h2{font-size:56px;line-height:1.05;margin:0 0 10px;font-weight:800;background:linear-gradient(90deg,#60A5FA,#A78BFA,#F472B6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ht p{color:var(--mu);font-size:17px;margin:0 0 16px}
+.lr{display:flex;gap:18px;align-items:center;flex-wrap:wrap;border:1px solid var(--ln);border-radius:14px;padding:12px 16px;margin-top:10px;background:color-mix(in srgb,var(--tx) 3%,transparent)}
+.ln2{min-width:170px}.ln2 b{display:block;letter-spacing:.1em;color:#6366F1;font-size:14px}.ln2 span{color:var(--mu);font-size:14px}
+.pills{display:flex;gap:10px;flex-wrap:wrap}
+.pill{--c:#3B82F6;border:0;border-radius:999px;padding:9px 18px;font:800 15px inherit;font-family:inherit;color:#fff;background:var(--c);cursor:pointer;box-shadow:0 6px 18px -4px var(--c);transition:transform .2s}.pill:hover{transform:translateY(-3px)}
+.pill[style*="10B981"],.pill[style*="F59E0B"]{color:#0B1220}
+@media(max-width:480px){.orbit{transform:scale(.82);margin:-30px}.ht h2{font-size:42px}.hero{text-align:center}.hero .ctl{justify-content:center}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<div class="bg"><div class="blob" style="background:#3B82F6;left:-80px;top:-60px"></div><div class="blob" style="background:#EC4899;right:-100px;top:30%;animation-delay:-4s"></div><div class="blob" style="background:#10B981;left:20%;bottom:-140px;animation-delay:-8s"></div></div>
+<div class="w">
+<div class="tabs" id="tabs"></div><div id="main"></div></div>
+<script>
+const D=[
+{k:"HTTP",ic:"🌍",tag:"HyperText Transfer Protocol · runs over TCP · port 80 / 443 (HTTPS)",
+what:"The language that web browsers and web servers use to talk. The client sends a request and the server sends back a response (a page, data or an error code).",
+ex:"Like ordering at a restaurant: you (browser) ask the waiter for the menu, the kitchen (server) replies with it. Typing amazon.in in your browser starts exactly this.",
+uses:["Websites","REST APIs for mobile apps","Login forms","File downloads","HTTPS payments"],
+n:[["💻","Browser (Client)"],["🖥️","Web Server"]],
+s:[[0,1,"GET /index.html","The browser asks the server for the home page."],
+[1,0,"200 OK + HTML","The server answers with status 200 (success) and the page code."],
+[0,1,"POST /login","You submit your username and password to the server."],
+[1,0,"302 Redirect","Login succeeded, so the server redirects you to your dashboard."]]},
+{k:"UDP",ic:"⚡",tag:"User Datagram Protocol · connectionless · fast, no delivery guarantee",
+what:"Sends small packets (datagrams) immediately without setting up a connection and without checking if they arrived. It trades reliability for speed.",
+ex:"Like shouting announcements on a loudspeaker: you don't wait to see if everyone heard. In a video call, one lost frame is better than a delayed conversation.",
+uses:["Video calls","Online games","Live streaming","DNS lookups","VoIP"],
+n:[["📱","Sender (Caller)"],["🎧","Receiver (Friend)"]],
+s:[[0,1,"Voice pkt 1","Packet 1 is sent immediately. No handshake needed."],
+[0,1,"Voice pkt 2","Packet 2 follows right away."],
+[0,1,"Voice pkt 3 ✖","Packet 3 is lost on the way. UDP does not notice or resend it.",1],
+[0,1,"Voice pkt 4","The call continues with only a tiny glitch. Speed is preserved."]]},
+{k:"TCP/IP",ic:"📦",tag:"Transmission Control Protocol / Internet Protocol · reliable, ordered delivery",
+what:"IP gives every device an address and routes packets. TCP sits on top: it opens a connection (3-way handshake), numbers data, confirms delivery and resends anything that is lost.",
+ex:"Like a registered courier: the courier first confirms you're home, delivers numbered parcels, you sign for each one, and missing parcels are re-sent.",
+uses:["Web & email","File transfer (FTP)","SSH remote login","Database connections"],
+n:[["💻","Sender"],["🖥️","Receiver"]],
+s:[[0,1,"SYN","Handshake step 1: the sender asks, \"Can we connect?\""],
+[1,0,"SYN + ACK","Step 2: the receiver says, \"Yes, I'm ready.\""],
+[0,1,"ACK","Step 3: connection established."],
+[0,1,"DATA seg 1 ✖","The first data segment is lost in the network.",1],
+[0,1,"DATA seg 1 (resend)","No ACK arrived, so TCP retransmits the segment."],
+[1,0,"ACK seg 1","The receiver confirms delivery. Reliable!"]]},
+{k:"ICMP",ic:"📡",tag:"Internet Control Message Protocol · network diagnostics & error reports",
+what:"Not for carrying user data. Routers and hosts use ICMP to report errors and test connectivity. The ping and traceroute commands are built on it.",
+ex:"Like knocking on a door and listening for \"Who is it?\" – ping checks whether a device is alive and how long the reply takes.",
+uses:["ping (is it online?)","traceroute (path finding)","Destination unreachable","TTL expired alerts"],
+n:[["💻","Your PC"],["🌐","Server / Router"]],
+s:[[0,1,"Echo Request","You run: ping google.com. An echo request is sent."],
+[1,0,"Echo Reply 24 ms","The server replies; the round-trip time is 24 ms."],
+[0,1,"TTL = 1 packet","traceroute sends a packet with a very small TTL (hop limit)."],
+[1,0,"Time Exceeded","The router drops it and reports back, revealing its own address."]]},
+{k:"DHCP",ic:"🏷️",tag:"Dynamic Host Configuration Protocol · UDP ports 67 / 68",
+what:"Automatically gives a device an IP address, subnet mask, gateway and DNS server when it joins a network. The four steps are called DORA.",
+ex:"Like a hotel front desk: you arrive without a room, the desk offers you one, you accept, and they confirm. You get a key (IP) for a limited time (lease).",
+uses:["Wi-Fi at home/college","Office networks","Mobile hotspots","Avoids manual IP setup"],
+n:[["📱","DHCP Client"],["🗄️","DHCP Server"]],
+s:[[0,1,"DISCOVER","D: A new phone shouts, \"Is there a DHCP server here?\""],
+[1,0,"OFFER 192.168.1.25","O: The server offers an available IP address."],
+[0,1,"REQUEST","R: The phone says, \"I'll take that address.\""],
+[1,0,"ACK + lease","A: The server confirms and sets the lease time. Phone is online!"]]},
+{k:"SNMP",ic:"🛰️",tag:"Simple Network Management Protocol · UDP ports 161 / 162",
+what:"A manager station asks network devices (agents) about their health and can change their settings. Devices can also send alerts on their own, called TRAPs.",
+ex:"Like a control room for a building: the manager checks each room's temperature, can change a setting, and gets an alarm automatically if a room overheats.",
+uses:["Router / switch monitoring","CPU & bandwidth graphs","Printer ink alerts","Fault alarms"],
+n:[["🧠","Manager (NMS)"],["📶","Agent (Router)"]],
+s:[[0,1,"GET cpuLoad","The manager asks the router for its CPU load."],
+[1,0,"Response: 72%","The agent returns the value."],
+[0,1,"SET hostname","The manager changes a setting remotely."],
+[1,0,"TRAP: Link down!","The agent raises an alert by itself. No polling needed."]]},
+{k:"All Together",ic:"🚀",tag:"Project idea · Smart Network Health Monitor",
+what:"One mini system where every protocol has a job: DHCP onboards devices, ICMP checks they are alive, SNMP reads their health, and HTTP shows everything on a dashboard.",
+ex:"A college lab: a new laptop joins, the system gives it an IP, pings it, reads its CPU load and instantly warns the admin on a web dashboard if it overheats.",
+uses:["DHCP: onboarding","ICMP: up/down","SNMP: health","TCP/UDP: transport","HTTP: dashboard"],
+n:[["💻","New Device"],["🗄️","DHCP Server"],["🧠","Monitor"],["📊","Dashboard"]],
+s:[[0,1,"DHCP DISCOVER","A new device joins the network and asks for an address."],
+[1,0,"DHCP ACK: IP","It receives an IP and appears in the device list."],
+[2,0,"ICMP Echo","The monitor pings the device every 30 seconds."],
+[0,2,"Echo Reply","Device is alive. A missing reply would mean DOWN."],
+[2,0,"SNMP GET CPU","The monitor reads the device's CPU load (UDP)."],
+[0,2,"TRAP: CPU 95%","The device warns about overheating on its own."],
+[2,3,"HTTP POST /alert","Over TCP, the alert is pushed to the web dashboard / admin's phone."]]}];
+const C={HTTP:["#3B82F6","#8B5CF6","APPLICATION LAYER"],UDP:["#F59E0B","#EF4444","TRANSPORT LAYER"],"TCP/IP":["#10B981","#3B82F6","TRANSPORT + NETWORK"],ICMP:["#EF4444","#EC4899","NETWORK LAYER"],DHCP:["#8B5CF6","#EC4899","APPLICATION LAYER"],SNMP:["#EC4899","#8B5CF6","APPLICATION LAYER"],"All Together":["#10B981","#EC4899","ALL LAYERS"]};
+const PAL=["#3B82F6","#8B5CF6","#EC4899","#F59E0B","#10B981","#06B6D4"];
+let cur=-1,idx=-1,tk=0,timer=null,dur=1200;const $=s=>document.querySelector(s);
+const tabs=$('#tabs');const mk=(txt,c1,c2,fn)=>{const b=document.createElement('button');b.className='tab';b.textContent=txt;b.style.setProperty('--c',c1);b.style.setProperty('--c2',c2);b.onclick=fn;tabs.appendChild(b)};
+mk('🏠 Home','#6366F1','#8B5CF6',()=>{cur=-1;render()});D.forEach((d,i)=>mk(d.ic+' '+d.k,C[d.k][0],C[d.k][1],()=>{cur=i;render()}));
+mk('🌓','#64748B','#64748B',()=>{const r=document.documentElement,l=(r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'))=='light';r.setAttribute('data-theme',l?'dark':'light')});
+const LAY=[["APPLICATION","Direct service to users",["HTTP","DHCP","SNMP"]],["TRANSPORT","End-to-end delivery",["TCP/IP","UDP"]],["NETWORK","Addressing & errors",["ICMP"]]];
+const go=k=>{cur=D.findIndex(x=>x.k==k);render();scrollTo(0,0)};
+function home(){const R=document.documentElement.style;R.setProperty('--ac','#6366F1');R.setProperty('--ac2','#8B5CF6');
+$('#main').innerHTML=`<div class="hero"><div class="orbit"><div class="ring"></div><div class="core">🌐</div><div class="spin">${D.slice(0,6).map((d,i)=>`<div class="pl" style="--a:${-80+i*60}deg"><div class="pp"><button class="orb pb" title="${d.k}" data-go="${d.k}" style="--ac:${C[d.k][0]};--ac2:${C[d.k][0]}">${d.ic}</button></div></div>`).join('')}</div></div>
+<div class="ht"><h2>Network<br>Protocols</h2><p>HTTP · UDP · TCP/IP · ICMP · DHCP · SNMP<br>Tap a planet to watch how it works.</p><div class="ctl"><button class="b" data-go="HTTP">Start exploring →</button><button class="b g" data-go="All Together">🚀 Project idea</button></div></div></div>
+<div class="card"><h3>Protocol Map – who sits where?</h3>${LAY.map(([a,b,ps])=>`<div class="lr"><div class="ln2"><b>${a}</b><span>${b}</span></div><div class="pills">${ps.map(k=>`<button class="pill" style="--c:${C[k][0]}" data-go="${k}">${D.find(x=>x.k==k).ic} ${k}</button>`).join('')}</div></div>`).join('')}</div>`;
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go))}
+const X=(i,n)=>(10+80*i/(n-1));
+const insp=a=>$('#ins').innerHTML=a.map(([k,v],i)=>`<div><small>${k}</small><b${i==3?' id="stt"':''}>${v}</b></div>`).join('');
+function ripple(x,c){const r=document.createElement('div');r.className='rip';r.style.left=x+'%';r.style.setProperty('--rc',c);$('.stage').appendChild(r);setTimeout(()=>r.remove(),1000)}
+function burst(){const s=$('.stage');for(let k=0;k<16;k++){const e=document.createElement('span');e.className='cf';e.textContent=['✨','🎉','⭐','💫'][k%4];e.style.left=(10+Math.random()*80)+'%';e.style.animationDelay=Math.random()*.4+'s';s.appendChild(e);setTimeout(()=>e.remove(),2000)}}
+function render(){clear();idx=-1;[...tabs.children].forEach((b,i)=>b.classList.toggle('on',i==cur+1));if(cur<0)return home();const d=D[cur],n=d.n.length,[c1,c2,ly]=C[d.k],R=document.documentElement.style;R.setProperty('--ac',c1);R.setProperty('--ac2',c2);
+$('#main').innerHTML=`<div class="card"><div class="ttl"><span class="big">${d.ic}</span><div><div class="k">${d.k}</div><div class="tag">${d.tag}</div></div><span class="lay">${ly}</span></div><p>${d.what}</p></div>
+<div class="grid"><div class="card"><h3>💡 Real-life example</h3><p>${d.ex}</p></div><div class="card"><h3>🎯 Where it is used</h3><div class="chips">${d.uses.map((u,i)=>`<span class="chip" style="--c:${PAL[(i+cur)%6]}">${u}</span>`).join('')}</div></div></div>
+<div class="card"><h3>🎬 Live simulation · Sender → Receiver</h3>
+<div class="legend"><span><i style="background:var(--req)"></i>Request</span><span><i style="background:var(--res)"></i>Reply</span><span><i style="background:var(--bad)"></i>Lost</span></div>
+<div class="stage"><div class="line"></div>${d.n.map((m,i)=>`<div class="node" id="n${i}" style="left:${X(i,n)}%"><div class="orb">${m[0]}</div>${m[1]}</div>`).join('')}<div class="pkt" id="pk"></div></div>
+<div class="bar"><i id="bar"></i></div>
+<div class="ctl"><button class="b" id="pl">▶ Play</button><button class="b g" id="nx">Next step ⏭</button><button class="b g" id="rs">↺ Reset</button><span class="spd">Speed <button data-s="1900">🐢</button><button data-s="1200" class="on">🚶</button><button data-s="700">⚡</button></span></div>
+<div class="now" id="now">Press <b>Play</b> or <b>Next step</b> to start the packet journey.</div><div class="insp" id="ins"></div>
+<ol class="log">${d.s.map((s,i)=>`<li class="${s[0]<s[1]?'fw':'bk'}" data-i="${i}"><i>${i+1}</i><div><b>${s[2]}</b><small>${d.n[s[0]][1]} → ${d.n[s[1]][1]}</small></div></li>`).join('')}</ol>
+<p class="hint">Tip: click any step in the list to replay it.</p></div>`;
+insp([['FROM','—'],['TO','—'],['TYPE','—'],['STATUS','—']]);
+$('#pl').onclick=play;$('#nx').onclick=()=>{stop();step(idx+1)};$('#rs').onclick=render;
+document.querySelectorAll('.spd button').forEach(b=>b.onclick=()=>{dur=+b.dataset.s;document.querySelectorAll('.spd button').forEach(x=>x.classList.toggle('on',x==b))});
+document.querySelectorAll('ol.log li').forEach(li=>li.onclick=()=>{stop();step(+li.dataset.i)})}
+function clear(){tk++;clearTimeout(timer);timer=null}
+function stop(){clear();const p=$('#pl');if(p)p.textContent='▶ Play'}
+function step(i){const d=D[cur];if(i>=d.s.length){stop();$('#bar').style.width='100%';$('#now').innerHTML='🎉 <b>Simulation finished!</b> Press Reset or click any step to replay.';burst();return false}
+idx=i;const [f,t,l,e,lost]=d.s[i],n=d.n.length,p=$('#pk'),my=++tk,fw=f<t,col=fw?'var(--req)':'var(--res)',cc=fw?'#F59E0B':'#10B981';
+p.className='pkt'+(fw?'':' rev');p.style.transition='none';p.style.left=X(f,n)+'%';p.textContent='✉ '+l;p.style.background=col;p.style.setProperty('--pc',col);void p.offsetWidth;
+p.style.transition='';p.style.transitionDuration=dur+'ms,400ms';p.classList.add('show');ripple(X(f,n),cc);
+document.querySelectorAll('ol.log li').forEach((li,j)=>{li.classList.toggle('on',j<=i);li.classList.toggle('cur',j==i)});
+$('#bar').style.width=(100*(i+1)/d.s.length)+'%';
+$('#now').innerHTML=`<b>Step ${i+1}/${d.s.length} – ${l}</b><br>${e}`;
+insp([['FROM',d.n[f][1]],['TO',d.n[t][1]],['TYPE',fw?'Request →':'← Reply'],['STATUS','⏳ In transit']]);
+const tg=lost?(X(f,n)+X(t,n))/2:X(t,n);
+requestAnimationFrame(()=>{p.style.left=tg+'%'});
+setTimeout(()=>{if(my!=tk)return;const s=$('#stt');if(lost){p.classList.add('lost');ripple(tg,'#EF4444');if(s)s.textContent='✖ Lost'}else{const nd=$('#n'+t);nd.classList.add('hit');ripple(X(t,n),cc);setTimeout(()=>nd.classList.remove('hit'),500);if(s)s.textContent='✔ Delivered'}},dur);return true}
+function play(){const b=$('#pl');if(timer){stop();return}
+b.textContent='⏸ Pause';if(idx>=D[cur].s.length-1)idx=-1;
+const go=()=>{if(!step(idx+1))return;timer=setTimeout(go,dur+1500)};go()}
+render();
+</script></body></html>
